@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Datumiranje</title>
+    <script type="text/javascript">
+        
+
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    if(date.getDay()==6){
+        date.setDate(date.getDate()+2);
+    }
+    if(date.getDay()==0){
+        date.setDate(date.getDate()+1);
+    }
+
+    return date;
+}
+
+
+function addBusinessDays(d,n) {
+    d = new Date(d.getTime());
+    var startingDate= new Date(d);
+    var day = d.getDay();
+    var endDate = new Date(d.setDate(d.getDate() + n + (day === 6 ? 2 : +!day) + (Math.floor((n - 1 + (day % 6 || 1)) / 5) * 2)));
+    var holiday = ["4/18/2022", "5/30/2022", "6/16/2022", "6/22/2022", "8/5/2022","8/15/2022","11/1/2022","11/18/2022","12/26/2022"];
+    var count=0;
+    var testDate = new Date(endDate);
+    while(testDate>=startingDate){
+        for (i = 0; i < holiday.length; i++) {
+        var day = startingDate.getDate();
+        var month = startingDate.getMonth() + 1; //Months are zero based
+        var year = startingDate.getFullYear();
+            if ((month + '/' + day + '/' + year) === (holiday[i])) {
+                count=count+1;
+                testDate.setDate(testDate.getDate()+1);
+                if(testDate.getDay()==6){
+                    testDate.setDate(testDate.getDate()+2);
+                     }
+                if(testDate.getDay()==0){
+                    testDate.setDate(testDate.getDate()+1);
+                     }
+                
+            }
+        }
+        startingDate=startingDate.addDays(1);
+    }
+
+    var endDay = endDate.getDay();
+    endDate.setDate(endDate.getDate() + count + (endDay === 6 ? 2 : +!endDay) + (Math.floor((count - 1 + (endDay % 6 || 1)) / 5) * 2));
+
+    for (i = 0; i < holiday.length; i++) {
+                var day = endDate.getDate();
+                var month = endDate.getMonth() + 1; //Months are zero based
+                var year = endDate.getFullYear();
+                    if ((month + '/' + day + '/' + year) === (holiday[i])) {
+                    endDate=endDate.addDays(1);
+                }
+            }
+    return endDate;
+    
+}
+
+        function predujam() {
+            datumNeki = new Date(document.getElementById("datumZ").valueAsDate);
+            datumNeki= addBusinessDays(datumNeki,10);
+            datumNeki = datumNeki.addDays(30);
+            
+            var holiday = ["4/18/2022", "5/30/2022", "6/16/2022", "6/22/2022", "8/5/2022","8/15/2022","11/1/2022","11/18/2022","12/26/2022"];
+            for (i = 0; i < holiday.length; i++) {
+                var day = datumNeki.getDate();
+                var month = datumNeki.getMonth() + 1; //Months are zero based
+                var year = datumNeki.getFullYear();
+                    if ((month + '/' + day + '/' + year) === (holiday[i])) {
+                    datumNeki=datumNeki.addDays(1);
+                }
+            }
+            alert(datumNeki.getDate()+'.'+(datumNeki.getMonth()+1)+'.'+datumNeki.getFullYear()+'.');
+        }
+
+        function ZNS(n) {
+            datumZaprimanja = new Date(document.getElementById("datumZ").valueAsDate);
+            datumOdobrenja = new Date(document.getElementById("datumO").valueAsDate);
+            datum45 = new Date();
+            datum45 = datumZaprimanja.addDays(n);
+            zavrsniDatum = new Date();
+            var holiday = ["4/18/2022", "5/30/2022", "6/16/2022", "6/22/2022", "8/5/2022","8/15/2022","11/1/2022","11/18/2022","12/26/2022"];
+
+            for (i = 0; i < holiday.length; i++) {
+                var day = datum45.getDate();
+                var month = datum45.getMonth() + 1; //Months are zero based
+                var year = datum45.getFullYear();
+                    if ((month + '/' + day + '/' + year) === (holiday[i])) {
+                    datum45=datum45.addDays(1);
+                }
+            }
+
+                if (datum45>datumOdobrenja){
+                    zavrsniDatum=datum45.addDays(30);
+                }
+                else{
+                    zavrsniDatum=datumOdobrenja.addDays(30);
+                }
+
+                for (i = 0; i < holiday.length; i++) {
+                var day = zavrsniDatum.getDate();
+                var month = zavrsniDatum.getMonth() + 1; //Months are zero based
+                var year = zavrsniDatum.getFullYear();
+                    if ((month + '/' + day + '/' + year) === (holiday[i])) {
+                    zavrsniDatum=zavrsniDatum.addDays(1);
+                    }
+                }
+
+                    alert(zavrsniDatum.getDate()+'.'+(zavrsniDatum.getMonth()+1)+'.'+zavrsniDatum.getFullYear()+'.');
+
+                }
+
+    </script>
+</head>
+
+<body>
+
+    <form>
+        <p>Unesi datum zaprimanja</p>
+        <input type="date" id="datumZ">
+
+        <p>Unesi datum odobrenja (ZNS-a)</p>
+        <input type="date" id="datumO">
+    </form>
+</br>
+    <form>
+        <input type="button" value="Predujam" onclick="predujam()" />
+        <input type="button" value="ZNS" onclick="ZNS(45)" />
+        <input type="button" value="Završni ZNS" onclick="ZNS(60)" />
+    </form>
+</body>
+
+</html>
